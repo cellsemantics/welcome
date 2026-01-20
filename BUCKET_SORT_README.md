@@ -25,6 +25,8 @@ Where:
 - ✅ **Negative number handling**: works with both positive and negative numbers
 - ✅ **Custom key functions**: sort objects by custom criteria
 - ✅ **Case-sensitive/insensitive string sorting**
+- ✅ **Ascending and descending order**: reverse parameter for descending sort
+- ✅ **In-place sorting**: optional in-place modification for memory efficiency
 - ✅ **Comprehensive test suite**: 50+ unit tests covering edge cases
 - ✅ **Type hints**: full type annotation support for better IDE integration
 - ✅ **Optimized for small arrays**: uses insertion sort for individual buckets
@@ -75,6 +77,35 @@ numbers = [64, 34, 25, 12, 22, 11, 90]
 
 # Use 5 buckets instead of default
 sorted_numbers = bucket_sort(numbers, num_buckets=5)
+```
+
+### Sorting in Descending Order
+
+```python
+from bucket_sort import bucket_sort
+
+numbers = [64, 34, 25, 12, 22, 11, 90]
+
+# Sort in descending order
+sorted_desc = bucket_sort(numbers, reverse=True)
+print(sorted_desc)  # Output: [90, 64, 34, 25, 22, 12, 11]
+```
+
+### In-Place Sorting
+
+```python
+from bucket_sort import bucket_sort_in_place
+
+numbers = [64, 34, 25, 12, 22, 11, 90]
+print(f"Before: {numbers}")
+
+# Sort in place (modifies original array)
+bucket_sort_in_place(numbers)
+print(f"After: {numbers}")  # Output: [11, 12, 22, 25, 34, 64, 90]
+
+# In-place descending sort
+bucket_sort_in_place(numbers, reverse=True)
+print(f"Reversed: {numbers}")  # Output: [90, 64, 34, 25, 22, 12, 11]
 ```
 
 ### Sorting Strings
@@ -136,7 +167,7 @@ sorted_data = bucket_sort_objects(data, key=lambda x: x[1])
 
 ## API Reference
 
-### `bucket_sort(arr, num_buckets=None, key=None)`
+### `bucket_sort(arr, num_buckets=None, key=None, reverse=False)`
 
 Sort a list of numeric values using bucket sort.
 
@@ -144,16 +175,17 @@ Sort a list of numeric values using bucket sort.
 - `arr` (List[Union[int, float]]): List of numeric elements to sort
 - `num_buckets` (Optional[int]): Number of buckets to use (default: √n)
 - `key` (Optional[Callable]): Function to extract comparison key from each element
+- `reverse` (bool): If True, sort in descending order (default: False)
 
 **Returns:**
-- `List[Union[int, float]]`: Sorted list in ascending order
+- `List[Union[int, float]]`: Sorted list in ascending or descending order
 
 **Raises:**
 - `ValueError`: If the array contains invalid data types
 
 ---
 
-### `bucket_sort_strings(arr, num_buckets=None, case_sensitive=True)`
+### `bucket_sort_strings(arr, num_buckets=None, case_sensitive=True, reverse=False)`
 
 Sort a list of strings using bucket sort.
 
@@ -161,13 +193,14 @@ Sort a list of strings using bucket sort.
 - `arr` (List[str]): List of strings to sort
 - `num_buckets` (Optional[int]): Number of buckets to use (default: 26)
 - `case_sensitive` (bool): Whether to perform case-sensitive sorting (default: True)
+- `reverse` (bool): If True, sort in descending order (default: False)
 
 **Returns:**
 - `List[str]`: Sorted list of strings
 
 ---
 
-### `bucket_sort_objects(arr, key, num_buckets=None)`
+### `bucket_sort_objects(arr, key, num_buckets=None, reverse=False)`
 
 Sort a list of objects using bucket sort with a custom key function.
 
@@ -175,9 +208,24 @@ Sort a list of objects using bucket sort with a custom key function.
 - `arr` (List[Any]): List of objects to sort
 - `key` (Callable[[Any], Union[int, float]]): Function to extract numeric sort key
 - `num_buckets` (Optional[int]): Number of buckets to use (default: √n)
+- `reverse` (bool): If True, sort in descending order (default: False)
 
 **Returns:**
 - `List[Any]`: Sorted list of objects
+
+---
+
+### `bucket_sort_in_place(arr, num_buckets=None, reverse=False)`
+
+Sort a list in place using bucket sort (modifies the original array).
+
+**Parameters:**
+- `arr` (List[Union[int, float]]): List of numeric elements to sort in place
+- `num_buckets` (Optional[int]): Number of buckets to use (default: √n)
+- `reverse` (bool): If True, sort in descending order (default: False)
+
+**Returns:**
+- `None`: The function modifies the array in place
 
 ## Testing
 

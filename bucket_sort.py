@@ -23,7 +23,8 @@ import math
 def bucket_sort(
     arr: List[Union[int, float]],
     num_buckets: Optional[int] = None,
-    key: Optional[Callable[[Any], Union[int, float]]] = None
+    key: Optional[Callable[[Any], Union[int, float]]] = None,
+    reverse: bool = False
 ) -> List[Union[int, float]]:
     """
     Sort a list using the bucket sort algorithm.
@@ -32,9 +33,10 @@ def bucket_sort(
         arr: List of numeric elements to sort
         num_buckets: Number of buckets to use (default: sqrt(n))
         key: Optional function to extract comparison key from each element
+        reverse: If True, sort in descending order (default: False)
     
     Returns:
-        Sorted list in ascending order
+        Sorted list in ascending order (or descending if reverse=True)
     
     Raises:
         ValueError: If the array is empty or contains invalid data types
@@ -45,6 +47,9 @@ def bucket_sort(
         
         >>> bucket_sort([0.42, 0.32, 0.23, 0.52, 0.25, 0.47, 0.51])
         [0.23, 0.25, 0.32, 0.42, 0.47, 0.51, 0.52]
+        
+        >>> bucket_sort([64, 34, 25, 12, 22, 11, 90], reverse=True)
+        [90, 64, 34, 25, 22, 12, 11]
     """
     if not arr:
         return arr
@@ -53,17 +58,18 @@ def bucket_sort(
     if key is not None:
         # Create list of (original_element, key_value) tuples
         keyed_arr = [(elem, key(elem)) for elem in arr]
-        sorted_keyed = _bucket_sort_internal([kv[1] for kv in keyed_arr], num_buckets)
+        sorted_keyed = _bucket_sort_internal([kv[1] for kv in keyed_arr], num_buckets, reverse)
         # Reconstruct original elements in sorted order
         key_to_original = {kv[1]: kv[0] for kv in keyed_arr}
         return [key_to_original[k] for k in sorted_keyed]
     
-    return _bucket_sort_internal(arr, num_buckets)
+    return _bucket_sort_internal(arr, num_buckets, reverse)
 
 
 def _bucket_sort_internal(
     arr: List[Union[int, float]],
-    num_buckets: Optional[int] = None
+    num_buckets: Optional[int] = None,
+    reverse: bool = False
 ) -> List[Union[int, float]]:
     """
     Internal bucket sort implementation for numeric values.
@@ -71,9 +77,10 @@ def _bucket_sort_internal(
     Args:
         arr: List of numeric elements to sort
         num_buckets: Number of buckets to use
+        reverse: If True, sort in descending order
     
     Returns:
-        Sorted list in ascending order
+        Sorted list in ascending or descending order
     """
     n = len(arr)
     
@@ -121,17 +128,22 @@ def _bucket_sort_internal(
     
     # Sort individual buckets using insertion sort (efficient for small arrays)
     for i in range(num_buckets):
-        buckets[i] = _insertion_sort(buckets[i])
+        buckets[i] = _insertion_sort(buckets[i], reverse=reverse)
     
     # Concatenate sorted buckets
     result = []
-    for bucket in buckets:
-        result.extend(bucket)
+    if reverse:
+        # Reverse bucket order for descending sort
+        for bucket in reversed(buckets):
+            result.extend(bucket)
+    else:
+        for bucket in buckets:
+            result.extend(bucket)
     
     return result
 
 
-def _insertion_sort(arr: List[Union[int, float]]) -> List[Union[int, float]]:
+def _insertion_sort(arr: List[Union[int, float]], reverse: bool = False) -> List[Union[int, float]]:
     """
     Sort a small list using insertion sort.
     
@@ -140,9 +152,10 @@ def _insertion_sort(arr: List[Union[int, float]]) -> List[Union[int, float]]:
     
     Args:
         arr: List of numeric elements to sort
+        reverse: If True, sort in descending order
     
     Returns:
-        Sorted list in ascending order
+        Sorted list in ascending or descending order
     """
     if len(arr) <= 1:
         return arr
@@ -151,9 +164,14 @@ def _insertion_sort(arr: List[Union[int, float]]) -> List[Union[int, float]]:
     for i in range(1, len(sorted_arr)):
         key = sorted_arr[i]
         j = i - 1
-        while j >= 0 and sorted_arr[j] > key:
-            sorted_arr[j + 1] = sorted_arr[j]
-            j -= 1
+        if reverse:
+            while j >= 0 and sorted_arr[j] < key:
+                sorted_arr[j + 1] = sorted_arr[j]
+                j -= 1
+        else:
+            while j >= 0 and sorted_arr[j] > key:
+                sorted_arr[j + 1] = sorted_arr[j]
+                j -= 1
         sorted_arr[j + 1] = key
     
     return sorted_arr
@@ -162,7 +180,8 @@ def _insertion_sort(arr: List[Union[int, float]]) -> List[Union[int, float]]:
 def bucket_sort_strings(
     arr: List[str],
     num_buckets: Optional[int] = None,
-    case_sensitive: bool = True
+    case_sensitive: bool = True,
+    reverse: bool = False
 ) -> List[str]:
     """
     Sort a list of strings using bucket sort.
@@ -171,6 +190,7 @@ def bucket_sort_strings(
         arr: List of strings to sort
         num_buckets: Number of buckets to use (default: 26 for alphabetic sorting)
         case_sensitive: Whether to perform case-sensitive sorting
+        reverse: If True, sort in descending order (default: False)
     
     Returns:
         Sorted list of strings
@@ -225,12 +245,16 @@ def bucket_sort_strings(
     
     # Sort individual buckets using Python's built-in sort
     for i in range(num_buckets):
-        buckets[i].sort(key=lambda s: s.lower() if not case_sensitive else s)
+        buckets[i].sort(key=lambda s: s.lower() if not case_sensitive else s, reverse=reverse)
     
     # Concatenate sorted buckets
     result = []
-    for bucket in buckets:
-        result.extend(bucket)
+    if reverse:
+        for bucket in reversed(buckets):
+            result.extend(bucket)
+    else:
+        for bucket in buckets:
+            result.extend(bucket)
     
     return result
 
@@ -238,7 +262,8 @@ def bucket_sort_strings(
 def bucket_sort_objects(
     arr: List[Any],
     key: Callable[[Any], Union[int, float]],
-    num_buckets: Optional[int] = None
+    num_buckets: Optional[int] = None,
+    reverse: bool = False
 ) -> List[Any]:
     """
     Sort a list of objects using bucket sort with a custom key function.
@@ -247,6 +272,7 @@ def bucket_sort_objects(
         arr: List of objects to sort
         key: Function to extract numeric sort key from each object
         num_buckets: Number of buckets to use
+        reverse: If True, sort in descending order (default: False)
     
     Returns:
         Sorted list of objects
@@ -292,14 +318,40 @@ def bucket_sort_objects(
     
     # Sort individual buckets
     for i in range(num_buckets):
-        buckets[i].sort(key=key)
+        buckets[i].sort(key=key, reverse=reverse)
     
     # Concatenate sorted buckets
     result = []
-    for bucket in buckets:
-        result.extend(bucket)
+    if reverse:
+        for bucket in reversed(buckets):
+            result.extend(bucket)
+    else:
+        for bucket in buckets:
+            result.extend(bucket)
     
     return result
+
+
+def bucket_sort_in_place(arr: List[Union[int, float]], num_buckets: Optional[int] = None, reverse: bool = False) -> None:
+    """
+    Sort a list in place using bucket sort (modifies the original array).
+    
+    Args:
+        arr: List of numeric elements to sort in place
+        num_buckets: Number of buckets to use (default: sqrt(n))
+        reverse: If True, sort in descending order (default: False)
+    
+    Returns:
+        None: The function modifies the array in place
+    
+    Examples:
+        >>> arr = [64, 34, 25, 12, 22, 11, 90]
+        >>> bucket_sort_in_place(arr)
+        >>> arr
+        [11, 12, 22, 25, 34, 64, 90]
+    """
+    sorted_arr = bucket_sort(arr, num_buckets=num_buckets, reverse=reverse)
+    arr[:] = sorted_arr
 
 
 if __name__ == "__main__":
@@ -332,7 +384,18 @@ if __name__ == "__main__":
     sorted_students = bucket_sort_objects(students, key=lambda x: x['grade'])
     print(f"Sorted by grade: {sorted_students}\n")
     
-    # Example 5: Large random array
+    # Example 5: Descending order
+    desc_array = [64, 34, 25, 12, 22, 11, 90]
+    print(f"Original array: {desc_array}")
+    print(f"Sorted descending: {bucket_sort(desc_array, reverse=True)}\n")
+    
+    # Example 6: In-place sorting
+    inplace_array = [64, 34, 25, 12, 22, 11, 90]
+    print(f"Before in-place sort: {inplace_array}")
+    bucket_sort_in_place(inplace_array)
+    print(f"After in-place sort: {inplace_array}\n")
+    
+    # Example 7: Large random array
     import random
     random.seed(42)
     large_array = [random.randint(1, 1000) for _ in range(20)]

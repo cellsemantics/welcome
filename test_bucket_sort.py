@@ -11,6 +11,7 @@ from bucket_sort import (
     bucket_sort,
     bucket_sort_strings,
     bucket_sort_objects,
+    bucket_sort_in_place,
     _insertion_sort
 )
 
@@ -116,6 +117,26 @@ class TestBucketSort(unittest.TestCase):
         result = bucket_sort(arr)
         for i in range(len(result)):
             self.assertAlmostEqual(result[i], expected[i], places=10)
+    
+    def test_reverse_order(self):
+        """Test sorting in descending order."""
+        arr = [64, 34, 25, 12, 22, 11, 90]
+        expected = [90, 64, 34, 25, 22, 12, 11]
+        self.assertEqual(bucket_sort(arr, reverse=True), expected)
+    
+    def test_reverse_order_floats(self):
+        """Test sorting floats in descending order."""
+        arr = [0.42, 0.32, 0.23, 0.52, 0.25]
+        expected = [0.52, 0.42, 0.32, 0.25, 0.23]
+        result = bucket_sort(arr, reverse=True)
+        for i in range(len(result)):
+            self.assertAlmostEqual(result[i], expected[i], places=10)
+    
+    def test_reverse_with_duplicates(self):
+        """Test descending sort with duplicates."""
+        arr = [5, 2, 8, 2, 9, 1, 5, 5]
+        expected = [9, 8, 5, 5, 5, 2, 2, 1]
+        self.assertEqual(bucket_sort(arr, reverse=True), expected)
 
 
 class TestBucketSortStrings(unittest.TestCase):
@@ -281,6 +302,49 @@ class TestInsertionSort(unittest.TestCase):
         self.assertEqual(_insertion_sort(arr), expected)
 
 
+class TestBucketSortInPlace(unittest.TestCase):
+    """Test cases for the bucket_sort_in_place function."""
+    
+    def test_in_place_basic(self):
+        """Test in-place sorting modifies the original array."""
+        arr = [64, 34, 25, 12, 22, 11, 90]
+        expected = [11, 12, 22, 25, 34, 64, 90]
+        bucket_sort_in_place(arr)
+        self.assertEqual(arr, expected)
+    
+    def test_in_place_returns_none(self):
+        """Test that in-place sort returns None."""
+        arr = [3, 1, 4, 1, 5]
+        result = bucket_sort_in_place(arr)
+        self.assertIsNone(result)
+    
+    def test_in_place_empty(self):
+        """Test in-place sorting of empty array."""
+        arr = []
+        bucket_sort_in_place(arr)
+        self.assertEqual(arr, [])
+    
+    def test_in_place_single(self):
+        """Test in-place sorting of single element."""
+        arr = [42]
+        bucket_sort_in_place(arr)
+        self.assertEqual(arr, [42])
+    
+    def test_in_place_reverse(self):
+        """Test in-place descending sort."""
+        arr = [64, 34, 25, 12, 22, 11, 90]
+        expected = [90, 64, 34, 25, 22, 12, 11]
+        bucket_sort_in_place(arr, reverse=True)
+        self.assertEqual(arr, expected)
+    
+    def test_in_place_with_duplicates(self):
+        """Test in-place sort with duplicates."""
+        arr = [5, 2, 8, 2, 9, 1, 5, 5]
+        expected = [1, 2, 2, 5, 5, 5, 8, 9]
+        bucket_sort_in_place(arr)
+        self.assertEqual(arr, expected)
+
+
 class TestEdgeCases(unittest.TestCase):
     """Test edge cases and special scenarios."""
     
@@ -360,6 +424,7 @@ def run_tests():
     suite.addTests(loader.loadTestsFromTestCase(TestBucketSort))
     suite.addTests(loader.loadTestsFromTestCase(TestBucketSortStrings))
     suite.addTests(loader.loadTestsFromTestCase(TestBucketSortObjects))
+    suite.addTests(loader.loadTestsFromTestCase(TestBucketSortInPlace))
     suite.addTests(loader.loadTestsFromTestCase(TestInsertionSort))
     suite.addTests(loader.loadTestsFromTestCase(TestEdgeCases))
     suite.addTests(loader.loadTestsFromTestCase(TestPerformance))
