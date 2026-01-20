@@ -14,6 +14,7 @@ This repository is intended to:
 - Minimal, easy-to-read structure
 - Example files and templates for docs, issues, and PRs
 - Guidance for onboarding and contributing
+- **Bucket Sort Implementation**: Production-ready bucket sort algorithm in Python with comprehensive tests
 
 ## Quick start
 
@@ -25,6 +26,10 @@ This repository is intended to:
 
 2. Inspect the repository structure and example files:
    - README.md — this file
+   - bucket_sort.py — comprehensive bucket sort implementation
+   - test_bucket_sort.py — unit tests for bucket sort
+   - BUCKET_SORT_README.md — detailed bucket sort documentation
+   - requirements.txt — Python dependencies
    - docs/ — optional documentation and onboarding guides
    - examples/ — demo projects or sample code
    - .github/ — issue and PR templates, workflows
@@ -38,6 +43,37 @@ This repository is intended to:
    git push origin my-update
    # Create a PR on GitHub
    ```
+
+## Bucket Sort Algorithm
+
+This repository includes a comprehensive bucket sort implementation in Python. Bucket sort is a distribution-based sorting algorithm that achieves O(n + k) average time complexity.
+
+### Quick Example
+
+```python
+from bucket_sort import bucket_sort
+
+# Sort integers
+numbers = [64, 34, 25, 12, 22, 11, 90]
+sorted_numbers = bucket_sort(numbers)
+print(sorted_numbers)  # [11, 12, 22, 25, 34, 64, 90]
+
+# Sort floats
+decimals = [0.42, 0.32, 0.23, 0.52, 0.25]
+sorted_decimals = bucket_sort(decimals)
+```
+
+For complete documentation, examples, and API reference, see [BUCKET_SORT_README.md](BUCKET_SORT_README.md).
+
+### Running Tests
+
+```bash
+# Run the test suite
+python test_bucket_sort.py
+
+# Or run the example demonstrations
+python bucket_sort.py
+```
 
 ## Usage
 

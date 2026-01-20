@@ -1,0 +1,17 @@
+# Requirements for Bucket Sort Implementation
+# Python 3.7 or higher is required
+
+# No external dependencies required for the core implementation
+# The implementation uses only Python standard library
+
+# Optional: Testing dependencies (if using pytest instead of unittest)
+pytest>=7.0.0
+pytest-cov>=4.0.0
+
+# Optional: Type checking
+mypy>=1.0.0
+
+# Optional: Code quality
+black>=23.0.0
+flake8>=6.0.0
+pylint>=2.17.0
